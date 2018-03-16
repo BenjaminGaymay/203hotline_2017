@@ -1,0 +1,113 @@
+#!/usr/bin/env python3
+""" hotline """
+
+import sys
+from math import factorial, exp
+from time import time as time
+
+def print_help(ret):
+    """ print help """
+
+    print("""USAGE
+    ./203hotline [n k | d]
+
+DESCRIPTION
+    n   n value for the computation of (n k)
+    k   k value for the computation of (n k)
+    d   average duration of calls (in seconds)""")
+
+    return ret
+
+
+def calculateCoef(n, k):
+	""" Calculate binomial coefficient """
+
+	return (factorial(n) // (factorial(k) * factorial(n - k)))
+
+
+def getTime():
+	""" Get actual time in ms """
+
+	return time() * 1000
+
+
+def showBinomial(time, people):
+	""" Calculate and print binomial distribution """
+
+	print("Binomial distribution:")
+	over = 0
+	start = getTime()
+	for i in range(51):
+		if i != 0 and i % 6 == 0:
+			print("")
+		coef = calculateCoef(people, i) * time**i * (1 - time)**(people - i)
+		print("{} -> {:.3f}".format(i, coef), end='\t' if i != 50 else '\n')
+		over = over + coef if i > 25 else over
+
+	print("overload:  {:.1f}%".format(over * 100))
+	print("computation time:  {:.2f} ms".format(getTime() - start))
+
+
+
+def showPoisson(time, people):
+	""" Calculate and print poisson distribution """
+
+	print("\nPoisson distribution:")
+	over = 0
+	poisson = time * people
+	start = getTime()
+	for i in range(51):
+		if i != 0 and i % 6 == 0:
+			print("")
+		coef = exp(-poisson) * poisson**i / factorial(i)
+		print("{} -> {:.3f}".format(i, coef), end='\t' if i != 50 else '\n')
+		over = over + coef if i > 25 else over
+
+	print("overload:  {:.1f}%".format(over * 100))
+	print("computation time:  {:.2f} ms".format(getTime() - start))
+
+
+def oneArg(arg):
+	""" One arg function """
+
+	try:
+		time = int(arg) / (8 * 3600)
+	except ValueError:
+		print("Error: {}: Bad argument".format(arg), file=sys.stderr)
+		return 84
+	showBinomial(time, 3500)
+	showPoisson(time, 3500)
+
+
+def twoArgs(arg1, arg2):
+	""" Two args function """
+
+	try:
+		n = int(arg1)
+		try:
+			k = int(arg2)
+		except ValueError:
+			print("Error: {}: Bad argument".format(arg2), file=sys.stderr)
+			return 84
+	except ValueError:
+		print("Error: {}: Bad argument".format(arg1), file=sys.stderr)
+		return 84
+
+	print("{}-combination of a {} set:\n{}".format(k, n, calculateCoef(n, k)))
+
+
+def main(argv):
+	""" Start hotline """
+
+	if "-h" in argv:
+		return print_help(0)
+	elif len(argv) == 1:
+		return oneArg(argv[0])
+	elif len(argv) == 2:
+		return twoArgs(argv[0], argv[1])
+	else:
+		return print_help(84)
+
+
+if __name__ == "__main__":
+	exit(main(sys.argv[1:]))
