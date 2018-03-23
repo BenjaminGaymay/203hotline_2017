@@ -38,10 +38,8 @@ def showBinomial(time, people):
 	over = 0
 	start = getTime()
 	for i in range(51):
-		if i != 0 and i % 6 == 0:
-			print("")
 		coef = calculateCoef(people, i) * time**i * (1 - time)**(people - i)
-		print("{} -> {:.3f}".format(i, coef), end='\t' if i != 50 else '\n')
+		print("{} -> {:.3f}".format(i, coef), end='\n' if i != 0 and (i + 1) % 6 == 0 or i == 50 else '\t')
 		over = over + coef if i > 25 else over
 
 	print("overload:  {:.1f}%".format(over * 100))
@@ -57,10 +55,8 @@ def showPoisson(time, people):
 	poisson = time * people
 	start = getTime()
 	for i in range(51):
-		if i != 0 and i % 6 == 0:
-			print("")
 		coef = exp(-poisson) * poisson**i / factorial(i)
-		print("{} -> {:.3f}".format(i, coef), end='\t' if i != 50 else '\n')
+		print("{} -> {:.3f}".format(i, coef), end='\n' if i != 0 and (i + 1) % 6 == 0 or i == 50 else '\t')
 		over = over + coef if i > 25 else over
 
 	print("overload:  {:.1f}%".format(over * 100))
